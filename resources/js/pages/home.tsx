@@ -1,54 +1,72 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 
+import axios from 'axios';
 import { QRScanner } from '@/components/QRScanner';
 import { ManualInput }  from '@/components/ManualInput';
 import { StaffDetails } from '@/components/StaffDetails';
 import { Header } from '@/components/Header';
 
 export interface StaffData {
-  id: string;
+  id: number;
   name: string;
-  staffId: string;
+  staff_id: string;
   gender: 'Male' | 'Female';
   job_role: string;
   location: string;
   state: string;
   employment_status: 'Active' | 'Inactive' | 'Suspended';
-  photo?: string;
-  signature?: string;
+  photo: string | null;
+  signature: string | null;
 }
 
 const Home = () => {
-  const [staffData, setStaffData] = useState<StaffData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [scanMode, setScanMode] = useState<'qr' | 'manual'>('qr');
+    const [staffData, setStaffData] = useState<StaffData | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [scanMode, setScanMode] = useState<'qr' | 'manual'>('qr');
 //   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+ 
+// Effect to check for staff_id in URL on component mount
+    useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const staffIdFromUrl = urlParams.get('staff_id');
+    if (staffIdFromUrl && !staffData && !loading) { // Only trigger if no staff data is loaded and not already loading
+        handleStaffLookup(staffIdFromUrl);
+        // Optionally, clear the staff_id from the URL to prevent re-triggering on refresh
+        // window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    }, [staffData, loading]); // Depend on staffData and loading to avoid unnecessary re-runs
 
-  const handleStaffLookup = async (staffId: string) => {
+
+    const handleStaffLookup = async (staffId: string) => {
         setLoading(true);
         setError(null);
     
         try {
-            const response = await fetch('/api/staff/verify', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-                },
-                body: JSON.stringify({ staff_id: staffId })
-            });
+            // Using axios for requests, which typically handles CSRF tokens automatically
+            // if configured in resources/js/bootstrap.js or app.js
+            const response = await axios.get('/api/staff/verify', { params: {staff_id: staffId} });
             
-            if (!response.ok) {
-                throw new Error('Staff ID not found');
+            setStaffData(response.data); // axios puts response data directly in .data
+        } catch (err: any) { // Use 'any' to handle various error types from axios
+            if (axios.isAxiosError(err) && err.response) {
+                if (err.response.status === 419) {
+                    setError('Session expired or CSRF token mismatch. Please refresh the page and try again.');
+                } else if (err.response.status === 404) {
+                    setError('Staff ID not found.');
+                } else {
+                    setError('Failed to verify staff ID. Please try again.');
+                }
+                console.error('Staff lookup error:', err.response.data || err.response.statusText);
+            } else {
+                setError('An unexpected error occurred. Please try again.');
+                console.error('Staff lookup error:', err);
             }
             
-            const data = await response.json();
-            setStaffData(data);
-        } catch (err) {
-            setError('Staff ID not found. Please try again.');
-            // console.error('Staff lookup error:', err);
+        // } catch (err) {
+        //     setError('Staff ID not found. Please try again.');
+        //     // console.error('Staff lookup error:', err);
         } finally {
             setLoading(false);
         }

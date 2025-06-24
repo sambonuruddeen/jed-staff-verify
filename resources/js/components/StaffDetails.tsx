@@ -10,6 +10,12 @@ interface StaffDetailsProps {
   onReset: () => void;
 }
 
+const ImagePlaceholder = () => (
+        <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center">
+            <User className="w-10 h-10 text-white/70" />
+        </div>
+);
+
 export const StaffDetails = ({ staff, onReset }: StaffDetailsProps) => {
   const getStatusColor = (status: StaffData['employment_status']) => {
     switch (status) {
@@ -52,21 +58,27 @@ export const StaffDetails = ({ staff, onReset }: StaffDetailsProps) => {
 
       <Card className="overflow-hidden">
         <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg pt-6 pb-4 -mt-6">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 bg-op ">
             {staff.photo ? (
-              <img 
-                src={staff.photo} 
-                alt={staff.name}
-                className="w-20 h-20 rounded-full border-4 border-white/20 object-cover"
-              />
-            ) : (
-              <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center">
-                <User className="w-10 h-10 text-white/70" />
-              </div>
-            )}
+              <img
+                        src={staff.photo}
+                        alt={`Photo of ${staff.name}`}
+                        className="w-20 h-20 rounded-full border-4 border-white/20 object-cover"
+                        onError={(e) => {
+                            // This handles cases where the URL is present but the image fails to load.
+                            // You can replace it with a placeholder image.
+                            e.currentTarget.style.display = '<ImagePlaceholder />'; // Hide broken image
+                            // Or show a placeholder:
+                            // e.currentTarget.src = '/images/placeholder.png';
+                            // e.currentTarget.onerror = null; // Prevent infinite loops
+                        }}
+                    />
+                ) : (
+                    <ImagePlaceholder />
+                )}
             <div>
               <h2 className="text-2xl font-bold">{staff.name}</h2>
-              <p className="text-blue-100">Staff ID: {staff.id}</p>
+              <p className="text-blue-100">Staff ID: {staff.staff_id}</p>
             </div>
           </div>
         </CardHeader>
