@@ -35,8 +35,8 @@ class StaffController extends Controller
         $photoFilename = 'p' . $staff->staff_id . '.png';
         $signatureFilename = 's' . $staff->staff_id . '.png';
 
-        $photoPath = 'passports/' . $photoFilename;
-        $signaturePath = 'signatures/' . $signatureFilename;
+        $photoPath = 'Passports/' . $photoFilename;
+        $signaturePath = 'Signatures/' . $signatureFilename;
 
         $photoUrl = Storage::disk('public')->exists($photoPath)
             ? Storage::disk('public')->url($photoPath)

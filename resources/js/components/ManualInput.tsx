@@ -28,7 +28,7 @@ export const ManualInput = ({ onSubmit, loading }: ManualInputProps) => {
         <Input
           id="staffId"
           type="text"
-          placeholder="Enter staff ID (e.g., JED001)"
+          placeholder="Enter staff ID (e.g., 0101)"
           value={staffId}
           onChange={(e) => setStaffId(e.target.value)}
           disabled={loading}
