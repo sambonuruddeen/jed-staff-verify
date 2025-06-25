@@ -24,7 +24,7 @@ const Home = () => {
     const [staffData, setStaffData] = useState<StaffData | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [scanMode, setScanMode] = useState<'qr' | 'manual'>('qr');
+    const [scanMode, setScanMode] = useState<'qr' | 'manual' | null>(null);
 //   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
  
 // Effect to check for staff_id in URL on component mount
@@ -124,9 +124,10 @@ const Home = () => {
                 </button>
               </div>
 
-              {scanMode === 'qr' ? (
+              {scanMode === 'qr' && (
                 <QRScanner onScan={handleStaffLookup} loading={loading} />
-              ) : (
+              )}
+              {scanMode === 'manual' && (
                 <ManualInput onSubmit={handleStaffLookup} loading={loading} />
               )}
 

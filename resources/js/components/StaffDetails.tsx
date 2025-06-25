@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Calendar, Building, User, CheckCircle, XCircle, AlertCircle, ShieldCheck, LocateFixed, Circle, VenusAndMars } from 'lucide-react';
+import { ArrowLeft, Calendar, Building, User, CheckCircle, XCircle, AlertCircle, ShieldCheck, LocateFixed, Circle, VenusAndMars, SignatureIcon } from 'lucide-react';
 import { StaffData } from '@/pages/home';
 
 interface StaffDetailsProps {
@@ -14,6 +14,12 @@ const ImagePlaceholder = () => (
         <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center">
             <User className="w-10 h-10 text-white/70" />
         </div>
+);
+
+const SignaturePlaceholder = () => (
+      <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center">
+          <SignatureIcon className="w-10 h-10 text-black/40" />
+      </div>
 );
 
 export const StaffDetails = ({ staff, onReset }: StaffDetailsProps) => {
@@ -58,12 +64,12 @@ export const StaffDetails = ({ staff, onReset }: StaffDetailsProps) => {
 
       <Card className="overflow-hidden">
         <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg pt-6 pb-4 -mt-6">
-          <div className="flex items-center gap-4 bg-op ">
+          <div className="flex items-center gap-4 bg-op">
             {staff.photo ? (
               <img
                         src={staff.photo}
                         alt={`Photo of ${staff.name}`}
-                        className="w-20 h-20 rounded-full border-4 border-white/20 object-cover"
+                        className="w-30 h-30 rounded-full border-4 border-white/20 object-fill bg-sky-500/50"
                         onError={(e) => {
                             // This handles cases where the URL is present but the image fails to load.
                             // You can replace it with a placeholder image.
@@ -150,13 +156,11 @@ export const StaffDetails = ({ staff, onReset }: StaffDetailsProps) => {
                             <img 
                                 src={staff.signature} 
                                 alt={staff.name}
-                                className="w-40 h-15 rounded-md border-4 border-white/20 object-cover"
+                                className="w-40 h-20 rounded-md object-fill"
                             />
                             ) : (
-                            <div className="w-40 h-15 rounded-md bg-white/20 flex items-center justify-center">
-                                <User className="w-15 h-15 text-white/70" />
-                            </div>
-                        )}
+                                <SignaturePlaceholder />
+                            )}
                     </div>
                 </div>
             </div>
